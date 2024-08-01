@@ -22,7 +22,7 @@
 <br />
 <div class="container-fluid bg-light">
     <form asp-action="Save" method="post">
-        <div class="header-container border">s
+        <div class="header-container border">
             <div class="header-title">
                 <h6>Meeting Minutes</h6>
             </div>
@@ -59,7 +59,7 @@
                                 <div class="form-group row">
                                     <label for="date" class="col-sm-5 col-form-label">Date</label>
                                     <div class="col-sm-3">
-                                        <input type="date" id="date" name="MeetingDate" class="form-control" placeholder="Select date" value="@(Model.MeetingDate.ToString("yyyy-MM-dd"))" />
+                                        <input type="date" id="date" name="MeetingDate" class="form-control" placeholder="dd/mm/yyyy" value="@(Model.MeetingDate.ToString("yyyy-MM-dd"))" />
                                     </div>
 
                                     <label for="time" class="col-sm-1 col-form-label">Time</label>
@@ -71,7 +71,7 @@
                                 <div class="form-group row">
                                     <label for="meetingPlace" class="col-sm-4 col-form-label">Meeting Place<span style="color: red">*</span></label>
                                     <div class="col-sm-8">
-                                        <input type="text" id="meetingPlace" name="MeetingPlace" class="form-control" placeholder="Meeting place" value="@Model.MeetingPlace" />
+                                        <input type="text" id="meetingPlace" name="MeetingPlace" class="form-control" placeholder="meeting place" value="@Model.MeetingPlace" />
                                     </div>
                                 </div>
                                 <div class="form-group row">
