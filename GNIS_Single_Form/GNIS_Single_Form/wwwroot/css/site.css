@@ -1,0 +1,89 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.header-container {
+    background-color: #e9eef3; /* Light blue background color */
+    padding: 9px;
+    position: relative; /* Required for positioning the icon */
+}
+
+.header-title {
+    float: left;
+    margin-right: 20px; /* Space between title and icon */
+}
+
+.header-edit-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+}
+
+.header-container::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.radio-group {
+    display: flex;
+    align-items: center;
+}
+
+    .radio-group label {
+        margin-right: 15px;
+    }
+
+.form-column {
+    padding: 5px;
+}
+
+.form-column-right {
+    padding-left: 15px;
+}
+
+.form-control,
+.form-control-select {
+    width: 100%;
+}
+
+textarea {
+    height: 60px !important;
+}
+
+.form-row {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+}
+
+.form-group.row {
+    margin-bottom: 1rem;
+}

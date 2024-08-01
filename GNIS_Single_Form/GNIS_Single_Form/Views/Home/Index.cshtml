@@ -1,0 +1,361 @@
+﻿@model GNIS_Single_Form.ViewModels.MeetingViewModel
+
+@{
+    ViewData["Title"] = "Meeting Minutes";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+
+<br />
+<div class="container-fluid bg-light">
+    <form asp-action="Save" method="post">
+        <div class="header-container border">s
+            <div class="header-title">
+                <h6>Meeting Minutes</h6>
+            </div>
+            <div class="header-edit-icon">
+                <i class="fas fa-edit"></i>
+            </div>
+        </div>
+        <main role="main" class="pb-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="div1 p-3 mb-3 bg-white shadow-sm rounded">
+                        <div class="radio-group">
+                            <div>
+                                <input type="radio" id="corporate" name="SelectedCustomerType" value="corporate" checked />
+                                <label for="corporate">Corporate</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="individual" name="SelectedCustomerType" value="individual" />
+                                <label for="individual">Individual</label>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label for="customerName" class="col-sm-4 col-form-label">Customer Name<span style="color: red">*</span></label>
+                                    <div class="col-sm-8">
+                                        <select id="customerName" name="SelectedCustomerId" class="form-control form-control-select">
+                                            <!-- Options will be dynamically loaded -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="date" class="col-sm-5 col-form-label">Date</label>
+                                    <div class="col-sm-3">
+                                        <input type="date" id="date" name="MeetingDate" class="form-control" placeholder="Select date" value="@(Model.MeetingDate.ToString("yyyy-MM-dd"))" />
+                                    </div>
+
+                                    <label for="time" class="col-sm-1 col-form-label">Time</label>
+                                    <div class="col-sm-3">
+                                        <input type="time" id="time" name="MeetingTime" class="form-control" placeholder="Enter time" value="@Model.MeetingTime" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="meetingPlace" class="col-sm-4 col-form-label">Meeting Place<span style="color: red">*</span></label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="meetingPlace" name="MeetingPlace" class="form-control" placeholder="Meeting place" value="@Model.MeetingPlace" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="attendsClient" class="col-sm-4 col-form-label">
+                                        Attends From Client Side<span style="color: red">*</span>
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <textarea id="attendsClient" name="AttendsClient" class="form-control" rows="4" placeholder="Present client side">@Model.AttendsClient</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="attendsHost" class="col-sm-4 col-form-label">
+                                        Attends From Host Side<span style="color: red">*</span>
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <textarea id="attendsHost" name="AttendsHost" class="form-control" rows="4" placeholder="Present self side">@Model.AttendsHost</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label for="meetingAgenda" class="col-sm-4 col-form-label">Meeting Agenda<span style="color: red">*</span></label>
+                                    <div class="col-sm-8">
+                                        <textarea id="meetingAgenda" name="MeetingAgenda" class="form-control" rows="4" placeholder="Meeting agenda">@Model.MeetingAgenda</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="meetingDiscussion"
+                                           class="col-sm-4 col-form-label">
+                                        Meeting Discussion<span style="color: red">*</span>
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <textarea id="meetingDiscussion" name="MeetingDiscussion" class="form-control" rows="4" placeholder="Meeting discussion">@Model.MeetingDiscussion</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="meetingDecision" class="col-sm-4 col-form-label">Meeting Decision<span style="color: red">*</span></label>
+                                    <div class="col-sm-8">
+                                        <textarea id="meetingDecision" name="MeetingDecision" class="form-control" rows="4" placeholder="Meeting decision">@Model.MeetingDecision</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="div2 p-3 mb-3 bg-white shadow-sm rounded">
+                        <div class="form-group row">
+                            <label for="productService" class="col-sm-2 col-form-label">Interested Product/Service</label>
+                            <div class="col-sm-6">
+                                <select id="productService" name="ProductServiceId" class="form-control form-control-select">
+                                    <!-- Product/Service options will be dynamically loaded -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="quantity" class="col-sm-2 col-form-label">Quantity</label>
+                            <div class="col-sm-3">
+                                <input type="number" id="quantity" name="Quantity" class="form-control" placeholder="Enter quantity" />
+                            </div>
+
+                            <label for="unit" class="col-sm-1 col-form-label">Unit</label>
+                            <div class="col-sm-2">
+                                <input type="text" id="unit" name="Unit" class="form-control" placeholder="Unit" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-primary" id="addButton">
+                                    + Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="div3 p-3 mb-3 bg-white shadow-sm rounded">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>SL#</th>
+                                    <th>Interested Product/Service Name</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <tr id="noRecordRow" class="text-center">
+                                    <td colspan="6">No matching record found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div>
+            <input type="hidden" id="meetingDetailsJson" name="MeetingDetailsJson" />
+            <button type="button" class="btn btn-success" id="saveButton"><i class="fas fa-save"></i> Save</button>
+            <button type="button" class="btn btn-secondary" id="refreshButton">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+        <br />
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<script>
+
+    $(document).ready(function () {
+
+        loadCustomers('corporate');
+
+        $('input[name="SelectedCustomerType"]').change(function () {
+            const type = $(this).val();
+            loadCustomers(type);
+        });
+
+        function loadCustomers(type) {
+            $.ajax({
+                url: '@Url.Action("GetCustomers", "Home")',
+                type: 'GET',
+                data: { type },
+                success: function (data) {
+                    const $customerName = $('#customerName');
+                    $customerName.empty().append($('<option>').text('Select customer name'));
+                    $.each(data, function (index, customer) {
+                        $customerName.append($('<option>').val(customer.value).text(customer.text));
+                    });
+                },
+                error: function (error) {
+                    console.error('Error loading customers:', error);
+                }
+            });
+        }
+
+        loadProducts();
+
+        function loadProducts() {
+            $.ajax({
+                url: '@Url.Action("GetProducts", "Home")',
+                type: 'GET',
+                success: function (data) {
+                    const $productService = $('#productService');
+                    $productService.empty().append($('<option>').text('Select product/service interested'));
+                    $.each(data, function (index, product) {
+                        $productService.append($('<option>').val(product.value).text(product.text));
+                    });
+
+                    $productService.change(function () {
+                        const selectedProductId = $(this).val();
+                        const selectedProduct = data.find(p => p.value == selectedProductId);
+                        $('#unit').val(selectedProduct ? selectedProduct.unit : '');
+                    });
+                },
+                error: function (error) {
+                    console.error('Error loading products:', error);
+                }
+            });
+        }
+
+
+        $('#addButton').click(function () {
+            event.preventDefault();
+            var productServiceId = $('#productService').val();
+            var productServiceName = $('#productService option:selected').text();
+            var quantity = $('#quantity').val();
+            var unit = $('#unit').val();
+
+            if (productServiceId && quantity && unit) {
+                var newRow = `<tr>
+                                <td></td> <!-- For row numbers -->
+                                <td data-product-id="${productServiceId}">${productServiceName}</td>
+                                <td>${quantity}</td>
+                                <td>${unit}</td>
+                                <td><button type="button" class="btn btn-sm btn-warning editButton">Edit</button></td>
+                                <td><button type="button" class="btn btn-sm btn-danger deleteButton">Delete</button></td>
+                            </tr>`;
+
+                $('#tableBody').append(newRow);
+                $('#noRecordRow').hide();
+                clearProductFields();
+                updateRowNumbers();
+            } else {
+                alert('Please fill all fields before adding.');
+            }
+        });
+
+        function clearProductFields() {
+            $('#productService').val('');
+            $('#quantity').val('');
+            $('#unit').val('');
+        }
+
+        function updateRowNumbers() {
+            $('#tableBody tr').each(function (index) {
+                $(this).find('td:eq(0)').text(index);
+            });
+        }
+
+        // Edit row
+        $('#tableBody').on('click', '.editButton', function () {
+            var row = $(this).closest('tr');
+            var productName = row.find('td:eq(1)').text();
+            var quantity = row.find('td:eq(2)').text();
+            var unit = row.find('td:eq(3)').text();
+
+            $('#productService option:contains(' + productName + ')').prop('selected', true);
+            $('#quantity').val(quantity);
+            $('#unit').val(unit);
+
+            row.remove();
+            updateRowNumbers();
+        });
+
+        // Delete row
+        $('#tableBody').on('click', '.deleteButton', function () {
+            $(this).closest('tr').remove();
+            if ($('#tableBody tr').length === 0) {
+                $('#noRecordRow').show();
+            }
+            updateRowNumbers();
+        });
+
+        $('#saveButton').click(function (event) {
+            event.preventDefault();
+
+            var meetingDetails = [];
+            $('#tableBody tr').each(function () {
+                var row = $(this);
+                var productServiceId = row.find('td:eq(1)').data('product-id');
+                var quantity = row.find('td:eq(2)').text();
+                var unit = row.find('td:eq(3)').text();
+
+                if (productServiceId && quantity && unit) {
+                    meetingDetails.push({
+                        ProductServiceId: productServiceId,
+                        Quantity: quantity,
+                        Unit: unit
+                    });
+                }
+            });
+
+            var meetingDetailsJson = JSON.stringify(meetingDetails);
+
+            var formData = {
+                SelectedCustomerId: $('#customerName').val(),
+                SelectedCustomerType: $('input[name="SelectedCustomerType"]:checked').val(),
+                MeetingDate: $('#date').val(),
+                MeetingTime: $('#time').val(),
+                MeetingPlace: $('#meetingPlace').val(),
+                AttendsClient: $('#attendsClient').val(),
+                AttendsHost: $('#attendsHost').val(),
+                MeetingAgenda: $('#meetingAgenda').val(),
+                MeetingDiscussion: $('#meetingDiscussion').val(),
+                MeetingDecision: $('#meetingDecision').val(),
+                MeetingDetailsJson: meetingDetailsJson
+            };
+
+
+            $.ajax({
+                url: '@Url.Action("Save", "Home")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    window.location.href = '@Url.Action("Index", "Home")';
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving data:', error);
+                }
+            });
+        });
+
+    });
+
+    document.getElementById('refreshButton').addEventListener('click', function () {
+        location.reload();
+    });
+</script>
+
