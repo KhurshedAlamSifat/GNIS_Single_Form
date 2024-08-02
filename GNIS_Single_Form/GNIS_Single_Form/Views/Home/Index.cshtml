@@ -1,8 +1,7 @@
-﻿@model GNIS_Single_Form.ViewModels.MeetingViewModel
-
-@{
+﻿@{
     ViewData["Title"] = "Meeting Minutes";
 }
+<br />
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -19,9 +18,8 @@
 }
 
 
-<br />
 <div class="container-fluid bg-light">
-    <form asp-action="Save" method="post">
+    <form id="meetingForm" asp-action="Save" asp-controller="Home" method="post">
         <div class="header-container border">
             <div class="header-title">
                 <h6>Meeting Minutes</h6>
@@ -59,19 +57,19 @@
                                 <div class="form-group row">
                                     <label for="date" class="col-sm-5 col-form-label">Date</label>
                                     <div class="col-sm-3">
-                                        <input type="date" id="date" name="MeetingDate" class="form-control" placeholder="dd/mm/yyyy" value="@(Model.MeetingDate.ToString("yyyy-MM-dd"))" />
+                                        <input type="date" id="date" name="MeetingDate" class="form-control" placeholder="dd/mm/yyyy"  />
                                     </div>
 
                                     <label for="time" class="col-sm-1 col-form-label">Time</label>
                                     <div class="col-sm-3">
-                                        <input type="time" id="time" name="MeetingTime" class="form-control" placeholder="Enter time" value="@Model.MeetingTime" />
+                                        <input type="time" id="time" name="MeetingTime" class="form-control" placeholder="Enter time" />
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
                                     <label for="meetingPlace" class="col-sm-4 col-form-label">Meeting Place<span style="color: red">*</span></label>
                                     <div class="col-sm-8">
-                                        <input type="text" id="meetingPlace" name="MeetingPlace" class="form-control" placeholder="meeting place" value="@Model.MeetingPlace" />
+                                        <input type="text" id="meetingPlace" name="MeetingPlace" class="form-control" placeholder="meeting place" />
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -79,7 +77,7 @@
                                         Attends From Client Side<span style="color: red">*</span>
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea id="attendsClient" name="AttendsClient" class="form-control" rows="4" placeholder="Present client side">@Model.AttendsClient</textarea>
+                                        <textarea id="attendsClient" name="AttendsClient" class="form-control" rows="4" placeholder="Present client side"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -87,7 +85,7 @@
                                         Attends From Host Side<span style="color: red">*</span>
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea id="attendsHost" name="AttendsHost" class="form-control" rows="4" placeholder="Present self side">@Model.AttendsHost</textarea>
+                                        <textarea id="attendsHost" name="AttendsHost" class="form-control" rows="4" placeholder="Present self side"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -95,7 +93,7 @@
                                 <div class="form-group row">
                                     <label for="meetingAgenda" class="col-sm-4 col-form-label">Meeting Agenda<span style="color: red">*</span></label>
                                     <div class="col-sm-8">
-                                        <textarea id="meetingAgenda" name="MeetingAgenda" class="form-control" rows="4" placeholder="Meeting agenda">@Model.MeetingAgenda</textarea>
+                                        <textarea id="meetingAgenda" name="MeetingAgenda" class="form-control" rows="4" placeholder="Meeting agenda"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -104,13 +102,13 @@
                                         Meeting Discussion<span style="color: red">*</span>
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea id="meetingDiscussion" name="MeetingDiscussion" class="form-control" rows="4" placeholder="Meeting discussion">@Model.MeetingDiscussion</textarea>
+                                        <textarea id="meetingDiscussion" name="MeetingDiscussion" class="form-control" rows="4" placeholder="Meeting discussion"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="meetingDecision" class="col-sm-4 col-form-label">Meeting Decision<span style="color: red">*</span></label>
                                     <div class="col-sm-8">
-                                        <textarea id="meetingDecision" name="MeetingDecision" class="form-control" rows="4" placeholder="Meeting decision">@Model.MeetingDecision</textarea>
+                                        <textarea id="meetingDecision" name="MeetingDecision" class="form-control" rows="4" placeholder="Meeting decision"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -129,7 +127,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="quantity" class="col-sm-2 col-form-label">Quantity</label>
+                            <label for ="quantity" class="col-sm-2 col-form-label">Quantity</label>
                             <div class="col-sm-3">
                                 <input type="number" id="quantity" name="Quantity" class="form-control" placeholder="Enter quantity" />
                             </div>
@@ -174,7 +172,7 @@
         </main>
         <div>
             <input type="hidden" id="meetingDetailsJson" name="MeetingDetailsJson" />
-            <button type="button" class="btn btn-success" id="saveButton"><i class="fas fa-save"></i> Save</button>
+            <button type="submit" class="btn btn-success" id="saveButton"><i class="fas fa-save"></i> Save</button>
             <button type="button" class="btn btn-secondary" id="refreshButton">
                 <i class="fas fa-sync-alt"></i> Refresh
             </button>
@@ -323,35 +321,10 @@
             });
 
             var meetingDetailsJson = JSON.stringify(meetingDetails);
+            $('#meetingDetailsJson').val(meetingDetailsJson);
 
-            var formData = {
-                SelectedCustomerId: $('#customerName').val(),
-                SelectedCustomerType: $('input[name="SelectedCustomerType"]:checked').val(),
-                MeetingDate: $('#date').val(),
-                MeetingTime: $('#time').val(),
-                MeetingPlace: $('#meetingPlace').val(),
-                AttendsClient: $('#attendsClient').val(),
-                AttendsHost: $('#attendsHost').val(),
-                MeetingAgenda: $('#meetingAgenda').val(),
-                MeetingDiscussion: $('#meetingDiscussion').val(),
-                MeetingDecision: $('#meetingDecision').val(),
-                MeetingDetailsJson: meetingDetailsJson
-            };
-
-
-            $.ajax({
-                url: '@Url.Action("Save", "Home")',
-                type: 'POST',
-                data: formData,
-                success: function (response) {
-                    window.location.href = '@Url.Action("Index", "Home")';
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error saving data:', error);
-                }
-            });
+            $('#meetingForm').submit();
         });
-
     });
 
     document.getElementById('refreshButton').addEventListener('click', function () {

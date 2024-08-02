@@ -35,7 +35,7 @@ namespace GNIS_Single_Form.ViewModels
         [Required]
         public string MeetingDecision { get; set; }
 
-        public string meetingDetailsJson { get; set; }
+        public string MeetingDetailsJson { get; set; }
     }
 
 }

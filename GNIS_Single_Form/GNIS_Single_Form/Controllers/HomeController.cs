@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Data;
 
+
 namespace GNIS_Single_Form.Controllers
 {
     public class HomeController : Controller
@@ -21,11 +22,7 @@ namespace GNIS_Single_Form.Controllers
 
         public IActionResult Index()
         {
-            var model = new MeetingViewModel
-            {
-                MeetingDate = DateTime.Now
-            };
-            return View(model);
+            return View();
         }
 
         [HttpGet]
@@ -52,101 +49,85 @@ namespace GNIS_Single_Form.Controllers
             return Json(products);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Save(MeetingViewModel viewModel)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                foreach (var key in ModelState.Keys)
+                if (!string.IsNullOrEmpty(viewModel.MeetingDetailsJson))
                 {
-                    var state = ModelState[key];
-                    if (state.Errors.Count > 0)
+                    List<MeetingDetailViewModel> meetingDetails;
+                    try
                     {
-                        // Use a logging framework instead of Console.WriteLine
-                        _logger.LogWarning($"{key}: {state.Errors[0].ErrorMessage}");
+                        meetingDetails = JsonConvert.DeserializeObject<List<MeetingDetailViewModel>>(viewModel.MeetingDetailsJson);
+                    }
+                    catch (JsonException ex)
+                    {
+                        TempData["ErrorMessage"] = "Error parsing meeting details.";
+                        return RedirectToAction("Index");
+                    }
+                    using (var transaction = await _context.Database.BeginTransactionAsync())
+                    {
+                        try
+                        {
+                            var newMasterId = new SqlParameter("@NewMasterId", SqlDbType.Int)
+                            {
+                                Direction = ParameterDirection.Output
+                            };
+
+                            await _context.Database.ExecuteSqlRawAsync(
+                                "EXEC Meeting_Minutes_Master_Save_SP @CustomerId, @CustomerType, @MeetingDate, @MeetingTime, @MeetingPlace, @AttendsClient, @AttendsHost, @MeetingAgenda, @MeetingDiscussion, @MeetingDecision, @NewMasterId OUT",
+                                new SqlParameter("@CustomerId", viewModel.SelectedCustomerId),
+                                new SqlParameter("@CustomerType", viewModel.SelectedCustomerType),
+                                new SqlParameter("@MeetingDate", viewModel.MeetingDate),
+                                new SqlParameter("@MeetingTime", viewModel.MeetingTime.ToString(@"hh\:mm\:ss")), // Ensure the format matches
+                                new SqlParameter("@MeetingPlace", viewModel.MeetingPlace),
+                                new SqlParameter("@AttendsClient", viewModel.AttendsClient),
+                                new SqlParameter("@AttendsHost", viewModel.AttendsHost),
+                                new SqlParameter("@MeetingAgenda", viewModel.MeetingAgenda),
+                                new SqlParameter("@MeetingDiscussion", viewModel.MeetingDiscussion),
+                                new SqlParameter("@MeetingDecision", viewModel.MeetingDecision),
+                                newMasterId
+                            );
+
+                            int masterId = (int)newMasterId.Value;
+
+                            foreach (var detail in meetingDetails)
+                            {
+                                await _context.Database.ExecuteSqlRawAsync(
+                                    "EXEC Meeting_Minutes_Details_Save_SP @MasterId, @ProductServiceId, @Quantity, @Unit",
+                                    new SqlParameter("@MasterId", masterId),
+                                    new SqlParameter("@ProductServiceId", detail.ProductServiceId),
+                                    new SqlParameter("@Quantity", detail.Quantity),
+                                    new SqlParameter("@Unit", detail.Unit)
+                                );
+                            }
+
+                            await transaction.CommitAsync();
+
+                            TempData["SuccessMessage"] = "Meeting details saved successfully!";
+                            return RedirectToAction("Index");
+                        }
+                        catch (SqlException ex)
+                        {
+                            TempData["ErrorMessage"] = "Database error occurred.";
+                            return RedirectToAction("Index");
+                        }
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                            TempData["ErrorMessage"] = "An unexpected error occurred.";
+                            return RedirectToAction("Index");
+                        }
                     }
                 }
-                TempData["ErrorMessage"] = "There are validation errors. Please correct them and try again.";
-                return View("Index", viewModel);
-            }
 
-            if (string.IsNullOrEmpty(viewModel.meetingDetailsJson))
-            {
-                ModelState.AddModelError("meetingDetailsJson", "Meeting details are required.");
                 TempData["ErrorMessage"] = "Meeting details are required.";
-                return View("Index", viewModel);
+                return RedirectToAction("Index");                
             }
 
-            List<MeetingDetailViewModel> meetingDetails;
-            try
-            {
-                meetingDetails = JsonConvert.DeserializeObject<List<MeetingDetailViewModel>>(viewModel.meetingDetailsJson);
-            }
-            catch (JsonException ex)
-            {
-                ModelState.AddModelError("meetingDetailsJson", "Error parsing meeting details.");
-                TempData["ErrorMessage"] = "Error parsing meeting details.";
-                _logger.LogError("JSON Parsing Error: " + ex.Message);
-                return View("Index", viewModel);
-            }
-
-            using (var transaction = await _context.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    var newMasterId = new SqlParameter("@NewMasterId", SqlDbType.Int)
-                    {
-                        Direction = ParameterDirection.Output
-                    };
-
-                    await _context.Database.ExecuteSqlRawAsync(
-                        "EXEC Meeting_Minutes_Master_Save_SP @CustomerId, @CustomerType, @MeetingDate, @MeetingTime, @MeetingPlace, @AttendsClient, @AttendsHost, @MeetingAgenda, @MeetingDiscussion, @MeetingDecision, @NewMasterId OUT",
-                        new SqlParameter("@CustomerId", viewModel.SelectedCustomerId),
-                        new SqlParameter("@CustomerType", viewModel.SelectedCustomerType),
-                        new SqlParameter("@MeetingDate", viewModel.MeetingDate),
-                        new SqlParameter("@MeetingTime", viewModel.MeetingTime.ToString(@"hh\:mm\:ss")), // Ensure the format matches
-                        new SqlParameter("@MeetingPlace", viewModel.MeetingPlace),
-                        new SqlParameter("@AttendsClient", viewModel.AttendsClient),
-                        new SqlParameter("@AttendsHost", viewModel.AttendsHost),
-                        new SqlParameter("@MeetingAgenda", viewModel.MeetingAgenda),
-                        new SqlParameter("@MeetingDiscussion", viewModel.MeetingDiscussion),
-                        new SqlParameter("@MeetingDecision", viewModel.MeetingDecision),
-                        newMasterId
-                    );
-
-                    int masterId = (int)newMasterId.Value;
-
-                    foreach (var detail in meetingDetails)
-                    {
-                        await _context.Database.ExecuteSqlRawAsync(
-                            "EXEC Meeting_Minutes_Details_Save_SP @MasterId, @ProductServiceId, @Quantity, @Unit",
-                            new SqlParameter("@MasterId", masterId),
-                            new SqlParameter("@ProductServiceId", detail.ProductServiceId),
-                            new SqlParameter("@Quantity", detail.Quantity),
-                            new SqlParameter("@Unit", detail.Unit)
-                        );
-                    }
-
-                    await transaction.CommitAsync();
-
-                    TempData["SuccessMessage"] = "Meeting details saved successfully!";
-                    return RedirectToAction("Index");
-                }
-                catch (SqlException ex)
-                {
-                    await transaction.RollbackAsync();
-                    _logger.LogError("Database error: " + ex.Message);
-                    TempData["ErrorMessage"] = "Database error occurred.";
-                    return View("Index", viewModel);
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    _logger.LogError("Unexpected error: " + ex.Message);
-                    TempData["ErrorMessage"] = "An unexpected error occurred.";
-                    return View("Index", viewModel);
-                }
-            }
+            TempData["ErrorMessage"] = "There are validation errors. Please correct them and try again.";
+            return RedirectToAction("Index");
         }
-
     }
 }
